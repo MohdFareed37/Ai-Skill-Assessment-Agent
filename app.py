@@ -95,15 +95,21 @@ if st.session_state.phase == 'input':
 # --- PHASE 2: EXTRACTION ---
 elif st.session_state.phase == 'extract':
     with st.spinner("Analyzing Resume and Job Description..."):
-        agent = st.session_state.agent
-        
-        # Run Step 1
-        extracted = agent.step_1_extract_skills()
-        # Run Step 2
-        mapping = agent.step_2_map_skills()
-        
-        st.session_state.phase = 'chat_init'
-        st.rerun()
+        try:
+            agent = st.session_state.agent
+            
+            # Run Step 1
+            extracted = agent.step_1_extract_skills()
+            # Run Step 2
+            mapping = agent.step_2_map_skills()
+            
+            st.session_state.phase = 'chat_init'
+            st.rerun()
+        except Exception as e:
+            st.error(f"An API error occurred: {e}")
+            if st.button("Go Back"):
+                reset_app()
+                st.rerun()
 
 # --- PHASE 3: INTERVIEW (CHAT) ---
 elif st.session_state.phase.startswith('chat'):
@@ -144,12 +150,15 @@ elif st.session_state.phase.startswith('chat'):
         st.session_state.questions_asked = 0
         st.session_state.messages = []
         with st.spinner("Generating question..."):
-            q = agent.generate_next_question(current_skill)
-            st.session_state.current_question = q
-            st.session_state.messages.append({"role": "assistant", "content": q})
-        st.session_state.phase = 'chat_active'
-        st.rerun()
-        
+            try:
+                q = agent.generate_next_question(current_skill)
+                st.session_state.current_question = q
+                st.session_state.messages.append({"role": "assistant", "content": q})
+                st.session_state.phase = 'chat_active'
+                st.rerun()
+            except Exception as e:
+                st.error(f"Failed to generate question: {e}")
+
     # Render Chat History
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
@@ -174,10 +183,13 @@ elif st.session_state.phase.startswith('chat'):
         else:
             # Generate next question for same skill
             with st.spinner("Evaluating and generating next question..."):
-                q = agent.generate_next_question(current_skill)
-                st.session_state.current_question = q
-                st.session_state.messages.append({"role": "assistant", "content": q})
-            st.rerun()
+                try:
+                    q = agent.generate_next_question(current_skill)
+                    st.session_state.current_question = q
+                    st.session_state.messages.append({"role": "assistant", "content": q})
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Failed to generate next question: {e}")
 
 # --- PHASE 4: DASHBOARD ---
 elif st.session_state.phase == 'dashboard':
@@ -185,10 +197,14 @@ elif st.session_state.phase == 'dashboard':
     
     if not agent.skill_scores:
         with st.spinner("Scoring skills and generating learning plan..."):
-            agent.step_4_score_skills()
-            agent.step_5_gap_analysis()
-            agent.step_6_generate_learning_plan()
-            agent.step_7_final_report() # Generates JSON report internally
+            try:
+                agent.step_4_score_skills()
+                agent.step_5_gap_analysis()
+                agent.step_6_generate_learning_plan()
+                agent.step_7_final_report() # Generates JSON report internally
+            except Exception as e:
+                st.error(f"Error generating dashboard: {e}")
+                st.stop()
     
     st.header("📊 Assessment Dashboard")
     
