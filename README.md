@@ -57,3 +57,45 @@ Once you run `python main.py`, the CLI will guide you through the process:
 3. The agent will process the inputs and begin the interactive technical interview in the terminal.
 4. Answer the questions as the candidate to test the assessment logic.
 5. After the questions are complete, a final structured JSON report will be printed out with scores, gap analysis, and the learning plan.
+
+## Architecture & Logic
+
+### Architecture Diagram
+```mermaid
+graph TD;
+    A[Job Description & Resume Input] --> B[Skill Extractor & Mapper];
+    B -->|Core Skills Identified| C[Adaptive Assessment Engine];
+    C <-->|Multi-turn Q&A| D[Candidate UI];
+    C -->|Chat History| E[Skill Evaluator];
+    E -->|Scores| F[Gap Analyzer];
+    F --> G[Learning Plan Generator];
+    G --> H[Final Dashboard & JSON Report];
+```
+
+### Scoring Logic
+The assessment agent uses a highly structured rubric to evaluate the candidate's answers for each skill. The LLM evaluates the chat history based on **correctness, depth, and practical application**, and assigns a score from 0-5:
+- **0**: No knowledge
+- **1**: Basic awareness (definitions only)
+- **2**: Theoretical understanding, no application
+- **3**: Working knowledge, simple use cases
+- **4**: Strong practical, real-world usage
+- **5**: Expert, optimization/design level
+
+Based on the required skills from the Job Description, the agent classifies gaps as **Critical** (score <= 2 for core skills) or **Improvement Areas** (score = 3), and creates a targeted learning plan to bridge those gaps.
+
+## Sample Inputs & Outputs
+
+**Sample Input (JD):**
+> Looking for a Backend Developer with strong Python skills. Experience with building RESTful APIs using FastAPI or Django is required. Must know SQL and Git.
+
+**Sample Input (Resume):**
+> Software Engineer with 2 years of experience. Built several web applications using Python and Flask. Familiar with basic SQL queries. Used Git for version control.
+
+**Sample Output (Dashboard Summary):**
+- **Skills Extracted**: Python, FastAPI, Django, SQL, Git.
+- **Skill Mapping**: 
+  - Matched: Python, SQL, Git
+  - Missing/Partial: FastAPI, Django
+- **Assessment**: The agent dynamically interviews the candidate on Python and SQL. (e.g., Python Score: 4/5, SQL Score: 2/5).
+- **Gap Analysis**: SQL is identified as a critical gap due to the low score. FastAPI is identified as a critical gap due to missing resume evidence.
+- **Learning Plan**: Actionable plan generated with estimated timelines (e.g., "Advanced SQL - 3 Days", "FastAPI Crash Course - 5 Days").
