@@ -96,10 +96,12 @@ if st.session_state.phase == 'input':
 elif st.session_state.phase == 'extract':
     with st.spinner("Analyzing Resume and Job Description..."):
         try:
+            import time
             agent = st.session_state.agent
             
             # Run Step 1
             extracted = agent.step_1_extract_skills()
+            time.sleep(4) # Delay to respect free tier rate limits (15 RPM)
             # Run Step 2
             mapping = agent.step_2_map_skills()
             
@@ -196,11 +198,15 @@ elif st.session_state.phase == 'dashboard':
     agent = st.session_state.agent
     
     if not agent.skill_scores:
-        with st.spinner("Scoring skills and generating learning plan..."):
+        with st.spinner("Scoring skills and generating learning plan... (this may take 15 seconds to respect free tier limits)"):
             try:
+                import time
                 agent.step_4_score_skills()
+                time.sleep(4)
                 agent.step_5_gap_analysis()
+                time.sleep(4)
                 agent.step_6_generate_learning_plan()
+                time.sleep(4)
                 agent.step_7_final_report() # Generates JSON report internally
             except Exception as e:
                 st.error(f"Error generating dashboard: {e}")
