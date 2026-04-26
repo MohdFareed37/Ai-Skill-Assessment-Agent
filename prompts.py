@@ -121,3 +121,31 @@ Learning Plan:
 
 Generate a concise final summary, an estimated total time to complete the learning plan, a job readiness score percentage, and a final recommendation (Hire | Trainable | Not Ready).
 """
+
+GENERATE_DASHBOARD_PROMPT = """You are a master Skill Gap Analyst and Career Mentor. 
+You must evaluate the candidate's interview performance, identify gaps, and generate a complete learning plan all at once.
+
+Based on the interview history below, perform these 4 tasks and return the structured JSON object:
+
+1. SCORE SKILLS (0-5 scale):
+0=No knowledge, 1=Basic awareness, 2=Theoretical, 3=Working knowledge, 4=Strong practical, 5=Expert.
+
+2. GAP ANALYSIS:
+- critical_gaps: Missing or score <=2 in MUST-HAVE core JD skills.
+- improvement_areas: Score = 3.
+- strong_areas: Score >=4.
+- adjacent_skills: Logical next skills to learn.
+
+3. LEARNING PLAN:
+Generate an actionable plan to bridge the identified gaps and improvement areas. Optimize for early career, avoid overload, prefer free resources, and sequence logically.
+
+4. FINAL REPORT:
+Provide a final summary, total estimated learning time, a job readiness percentage score, and a final recommendation (Hire | Trainable | Not Ready).
+
+--- INPUT DATA ---
+Extracted JD Skills:
+{extracted_skills}
+
+Assessment Interview History:
+{assessment_history}
+"""

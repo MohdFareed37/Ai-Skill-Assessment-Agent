@@ -9,6 +9,7 @@ from prompts import (
     STEP_5_GAP_ANALYSIS_PROMPT,
     STEP_6_LEARNING_PLAN_PROMPT,
     STEP_7_FINAL_REPORT_PROMPT,
+    GENERATE_DASHBOARD_PROMPT,
 )
 
 class Agent:
@@ -104,3 +105,18 @@ class Agent:
         )
         result = self.llm.generate_final_report(prompt, SYSTEM_PROMPT)
         return result.model_dump_json(indent=2)
+
+    def generate_unified_dashboard(self):
+        prompt = GENERATE_DASHBOARD_PROMPT.format(
+            extracted_skills=self.extracted_skills.model_dump_json(),
+            assessment_history=json.dumps(self.assessment_history)
+        )
+        dashboard_data = self.llm.generate_dashboard_data(prompt, SYSTEM_PROMPT)
+        
+        # Populate the state variables so the UI can render them
+        self.skill_scores = dashboard_data.skill_scores
+        self.gap_analysis = dashboard_data.gap_analysis
+        self.learning_plan = dashboard_data.learning_plan
+        
+        # Return the raw JSON dump as the final report
+        return dashboard_data.model_dump_json(indent=2)

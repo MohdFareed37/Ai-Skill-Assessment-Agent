@@ -198,16 +198,10 @@ elif st.session_state.phase == 'dashboard':
     agent = st.session_state.agent
     
     if not agent.skill_scores:
-        with st.spinner("Scoring skills and generating learning plan... (this may take 15 seconds to respect free tier limits)"):
+        with st.spinner("Scoring skills and generating learning plan... (Fast unified mode)"):
             try:
                 import time
-                agent.step_4_score_skills()
-                time.sleep(4)
-                agent.step_5_gap_analysis()
-                time.sleep(4)
-                agent.step_6_generate_learning_plan()
-                time.sleep(4)
-                agent.step_7_final_report() # Generates JSON report internally
+                st.session_state.final_report_json = agent.generate_unified_dashboard()
             except Exception as e:
                 st.error(f"Error generating dashboard: {e}")
                 st.stop()
@@ -271,7 +265,7 @@ elif st.session_state.phase == 'dashboard':
 
     # -- Download Report --
     st.divider()
-    report_json = agent.step_7_final_report()
+    report_json = st.session_state.final_report_json
     st.download_button(
         label="📄 Download Full JSON Report",
         data=report_json,

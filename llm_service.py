@@ -9,6 +9,7 @@ from models import (
     Step5Output,
     Step6Output,
     FinalReport,
+    DashboardOutput,
 )
 
 class LLMService:
@@ -60,3 +61,7 @@ class LLMService:
     def generate_final_report(self, prompt: str, system_instruction: str) -> FinalReport:
         result = self.generate_structured(prompt, system_instruction, FinalReport)
         return FinalReport.model_validate_json(result)
+
+    def generate_dashboard_data(self, prompt: str, system_instruction: str) -> DashboardOutput:
+        result = self.generate_structured(prompt, system_instruction, DashboardOutput)
+        return DashboardOutput.model_validate_json(result)

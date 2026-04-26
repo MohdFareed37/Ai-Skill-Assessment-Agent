@@ -69,3 +69,13 @@ class FinalReport(BaseModel):
     estimated_total_time: str
     job_readiness_score: str
     final_recommendation: str = Field(description="Hire | Trainable | Not Ready")
+
+# Unified Dashboard Output
+class DashboardOutput(BaseModel):
+    skill_scores: List[SkillScore]
+    gap_analysis: GapAnalysis
+    learning_plan: List[LearningPlanItem]
+    final_report_summary: str
+    estimated_total_time: str
+    job_readiness_score: str
+    final_recommendation: str
