@@ -17,7 +17,7 @@ class LLMService:
         if not api_key:
             raise ValueError("GEMINI_API_KEY environment variable is missing.")
         self.client = genai.Client(api_key=api_key)
-        self.model_name = "gemini-2.0-flash" # Switched to 2.0-flash because 1.5 is deprecated on this API version
+        self.model_name = "gemini-2.5-flash-lite" # Switched to 2.5-flash-lite as it has a working free tier quota
 
     def generate_structured(self, prompt: str, system_instruction: str, response_schema):
         config = types.GenerateContentConfig(
